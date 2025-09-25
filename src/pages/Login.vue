@@ -1,4 +1,5 @@
 <script setup>
+import router from '@/router'
 import { ref } from 'vue'
 
 const form = ref(null)
@@ -14,6 +15,11 @@ const credentials = ref({
 
 const rules = {
     required: value => !!value || 'Este campo es obligatorio',
+    email: value =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Ingresa un email válido',
+    minPassword: value =>
+        String(value || '').length >= 6 || 'La contraseña debe tener al menos 6 caracteres',
+
 }
 
 const nombre = ref()
@@ -30,6 +36,13 @@ const handleSubmit = async () => {
         // guarda tokens, redirige, etc.
         console.log('Enviar credenciales', credentials.value);
         nombre.value = credentials.value.username
+        // persistencia simple
+        localStorage.setItem('auth:user', nombre.value)
+        console.log('====================================');
+        console.log(localStorage.getItem('auth:user'));
+        console.log('====================================');
+        router.push("/");
+        window.location.reload()
 
     } catch (err) {
         error.value = 'Usuario o contraseña incorrectos';
@@ -42,18 +55,18 @@ const handleSubmit = async () => {
     <v-container class="py-16">
         <v-row justify="center">
             <v-col cols="12" sm="8" md="5">
-                <v-card class="pa-8" elevation="3">
+                <v-card class="pa-8 rounded-xl" elevation="3">
                     <v-card-title class="text-h5 font-weight-bold">Iniciar sesión</v-card-title>
 
                     <v-form ref="form" v-model="isValid" @submit.prevent="handleSubmit">
                         <v-text-field v-model="credentials.username" label="Usuario" prepend-inner-icon="mdi-account"
-                            :rules="[rules.required]" autocomplete="username" />
+                            :rules="[rules.required, rules.email]" autocomplete="username" />
 
                         <v-text-field v-model="credentials.password" :type="showPassword ? 'text' : 'password'"
                             label="Contraseña" prepend-inner-icon="mdi-lock"
                             :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                            @click:append-inner="showPassword = !showPassword" :rules="[rules.required]"
-                            autocomplete="current-password" />
+                            @click:append-inner="showPassword = !showPassword"
+                            :rules="[rules.required, rules.minPassword]" autocomplete="current-password" />
 
                         <v-btn type="submit" color="danger" class="mt-4" :loading="loading"
                             :disabled="!isValid || loading" block>

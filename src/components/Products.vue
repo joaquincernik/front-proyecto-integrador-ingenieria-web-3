@@ -88,7 +88,7 @@ const formatoARS = new Intl.NumberFormat("es-AR", {
         <div class="d-flex mt-5">
 
             <div v-for="articulo in filteredProducts" :key="articulo.id" class="col-3">
-                <CardProducts :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
+                <CardProducts :id="articulo.id" :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
                     :cantidad="articulo.cantidad" @add="addToCart(articulo)" />
             </div>
         </div>
@@ -104,7 +104,7 @@ const formatoARS = new Intl.NumberFormat("es-AR", {
         <div class="d-flex row mt-5">
 
             <div v-for="articulo in cart" :key="articulo.id" class="col-3">
-                <CardProducts :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
+                <CardProducts :id="articulo.id" :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
                     :cantidad="articulo.cantidad" @add="addToCart(articulo)" @remove="removeFromCart(articulo)" variants = "outlined" carrito="true"  />
             </div>
         </div>

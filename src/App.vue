@@ -15,11 +15,17 @@
       </v-btn>
     </router-link>
 
-    <router-link to="/login" custom v-slot="{ navigate, isActive }">
+    <router-link v-if="!isAuthenticated()" to="/login" custom v-slot="{ navigate, isActive }">
       <v-btn variant="outlined" color="white" class="ms-2" :class="{ 'text--secondary': isActive }" @click="navigate">
         Login
       </v-btn>
     </router-link>
+    <router-link v-if="isAuthenticated()" to="/login" custom v-slot="{ navigate, isActive }">
+      <v-btn variant="outlined" color="white" class="ms-2" :class="{ 'text--secondary': isActive }" @click="logout">
+        Cerrar sesion
+      </v-btn>
+    </router-link>
+    <v-banner-text v-if="nombre">Hola {{ nombre }}</v-banner-text>
   </v-toolbar-items>
 </v-app-bar>
 
@@ -30,7 +36,17 @@
 </template>
 
 <script setup>
-//
+const isAuthenticated = () => localStorage.getItem('auth:user')
+
+const nombre = localStorage.getItem('auth:user')
+console.log('====================================');
+console.log(nombre);
+console.log('====================================');
+
+const logout = ()=>{
+  localStorage.removeItem('auth:user');
+  window.location.reload()
+}
 </script>
 
 <style>

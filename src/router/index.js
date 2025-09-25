@@ -13,6 +13,22 @@ const router = createRouter({
   routes,
 })
 
+const isAuthenticated = () => localStorage.getItem('auth:user')
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(r => r.meta?.requiresAuth)
+
+  if (requiresAuth && !isAuthenticated()) {
+    next({ path: '/login', query: { redirect: to.fullPath } })
+    return
+  }
+
+  if (to.path === '/login' && isAuthenticated()) {
+    next({ path: '/' })
+    return
+  }
+
+  next()
+}) 
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
