@@ -4,7 +4,9 @@ const props = defineProps({
     image: String,
     precio: Number,
     cantidad: Number,
-    imagen: String
+    imagen: String,
+    variants: { type: String, default: "elevated"},
+    carrito: { type: Boolean, default: false}
 });
 
 const formatoARS = new Intl.NumberFormat("es-AR", {
@@ -13,9 +15,13 @@ const formatoARS = new Intl.NumberFormat("es-AR", {
   minimumFractionDigits: 2
 });
 
+const emit = defineEmits(['add', 'remove']);
+const onAdd = () => emit('add');
+const onRemove = () => emit('remove');
+
 </script>
 <template>
-<v-card class="p-4 m-2" hover>
+<v-card class="p-4 m-2" :variant=variants hover>
                     <v-img height="400px"
                         :src= "imagen"
                         cover></v-img>
@@ -35,9 +41,9 @@ const formatoARS = new Intl.NumberFormat("es-AR", {
 
 
                       <v-card-actions>
-                        <v-btn color="orange-lighten-2" text="Agregar a carrito"></v-btn>
-                        
-                        <v-btn icon="mdi-check"></v-btn>
+                        <v-btn v-if="!carrito" :disabled=!cantidad @click="onAdd" color="orange-lighten-2" text="Agregar a carrito"></v-btn>
+                        <v-btn v-if="!carrito" :disabled=!cantidad icon="mdi-check"></v-btn>
+                            <v-btn v-else @click="onRemove" color="red-lighten-2" text="Quitar de carrito"></v-btn>
                     </v-card-actions>
 
                  <!--    <v-expand-transition>

@@ -40,40 +40,80 @@ const products = ([
 const query = ref('')
 const normalized = (s) => String(s || '').toLowerCase().trim()
 const filteredProducts = computed(() => {
-  const q = normalized(query.value)
-  if (!q) return products
-  return products.filter((p) => normalized(p.nombre).includes(q))
+    const q = normalized(query.value)
+    if (!q) return products
+    return products.filter((p) => normalized(p.nombre).includes(q))
+});
+
+const totalAcumulado = computed(()=>{
+    let val = 0;
+    cart.value.forEach(i =>{
+        val = val + i.precio;
+    })
+    return val;
+});
+
+const cart = ref([]);
+const addToCart = (product) => { 
+    cart.value.push(product) 
+};
+const removeFromCart = (product) => { 
+    cart.value.pop(product) 
+};
+
+const formatoARS = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 2
 });
 
 </script>
 <template>
     <div class="container">
         <div class="mt-5">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="search-container">
-                        <input v-model="query" type="text" class="form-control search-input" placeholder="Busca articulos por su nombre"/>
-                        <i class="fas fa-search search-icon"></i>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+                rel="stylesheet">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="search-container">
+                            <input v-model="query" type="text" class="form-control search-input"
+                                placeholder="Busca articulos por su nombre" />
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
         <div class="d-flex mt-5">
 
             <div v-for="articulo in filteredProducts" :key="articulo.id" class="col-3">
                 <CardProducts :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
-                    :cantidad="articulo.cantidad" />
+                    :cantidad="articulo.cantidad" @add="addToCart(articulo)" />
             </div>
         </div>
 
         <div v-if="filteredProducts.length === 0" class="text-center text-muted py-4 text-amber">
             No se encontraron artículos para "{{ query }}".
         </div>
-
     </div>
+
+    <!--carrito-->
+    <div class="container" >
+        <h1 class="m-4">Carrito <span class="text-secondary" style="font-size: 1rem;">total acumulado: {{ formatoARS.format(totalAcumulado) }}</span></h1>
+        <div class="d-flex row mt-5">
+
+            <div v-for="articulo in cart" :key="articulo.id" class="col-3">
+                <CardProducts :imagen="articulo.imagen" :nombre="articulo.nombre" :precio="articulo.precio"
+                    :cantidad="articulo.cantidad" @add="addToCart(articulo)" @remove="removeFromCart(articulo)" variants = "outlined" carrito="true"  />
+            </div>
+        </div>
+
+        <div v-if="cart.length === 0" class="text-center text-muted py-4 text-amber">
+            No agregaste nada al carrito todavia.
+        </div>
+    </div>
+
 
 </template>
 
